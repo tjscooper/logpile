@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import AppBar from '@material-ui/core/AppBar';
-import IconButton from '@material-ui/core/IconButton';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
@@ -9,7 +8,6 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { withStyles } from '@material-ui/core/styles';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import ProjectService from '../service/project-service';
 
 const styles = theme => ({
   root: {
@@ -34,6 +32,9 @@ const styles = theme => ({
   },
   menuButtonTitle: {
     marginLeft: 16
+  },
+  logo: {
+    marginRight: 16
   }
 });
 
@@ -42,7 +43,7 @@ class Header extends React.Component {
   state = {
     projects: [],
     project: {
-      name: 'Select Project',
+      name: 'All Projects',
       id: null
     },
     menuEl: null
@@ -104,9 +105,9 @@ class Header extends React.Component {
       <div className={ this.classes.root }>
         <AppBar position="fixed">
           <Toolbar>
-            <IconButton color="inherit" aria-label="Logpile logo">
+            <div className={ this.classes.logo }>
               <FontAwesomeIcon icon="bullseye" />
-            </IconButton>
+            </div>
             <Typography className={ this.classes.title } variant="h6" color="inherit" noWrap>
               Logpile
             </Typography>

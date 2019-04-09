@@ -5,11 +5,14 @@ Intro.. Description.. Screenshots
 ##### TO DEVELOP
 
 * Features
+  - Top Drawer
   - Edit Log
     - Select Task (from Asana)
     - Add Link
   - Delete Log
   - Log Timer
+    - Start / Pause / Stop
+    - Display TimerElapsed (formatted)
   - Filters
     - By Project
     - By Multi-select LogType
