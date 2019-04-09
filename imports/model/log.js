@@ -22,7 +22,15 @@ export default Log = Class.create({
   name: 'Log',
   collection: LogsCollection,
   fields: {
+    name: {
+      type: String,
+      optional: true
+    },
     projectId: String,
+    taskId: {
+      type: String,
+      optional: true
+    },
     userId: String,
     type: {
       type: LogType

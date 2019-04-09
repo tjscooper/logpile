@@ -1,8 +1,5 @@
-import Log from '../model/log.js';
-
+import Log, { LogsCollection } from '../model/log.js';
 export default class LogService {
-
-  constructor() { }
 
   static insert(model) {
     if (!model instanceof Log) {
@@ -11,18 +8,21 @@ export default class LogService {
     return model.save();
   }
 
-  static update(model, field, value) {
+  static update(model) {
+    console.log('server update', model);
     if (!model instanceof Log) {
       throw new Meteor.Error('logs.update: invalid model');
     }
-    model.set(field, value);
-    return model.save();
+    return LogsCollection.update(
+      { _id: model._id },
+      { $set: model }
+    );
   }
 
   static remove(model) {
     if (!model instanceof Log) {
       throw new Meteor.Error('log.remove: invalid model');
     }
-    return model.remove();
+    return LogsCollection.remove({ _id: model._id });
   }
 }

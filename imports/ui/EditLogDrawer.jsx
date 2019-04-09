@@ -1,17 +1,31 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { withTracker } from 'meteor/react-meteor-data';
 import { withStyles } from '@material-ui/core/styles';
-import Drawer from '@material-ui/core/Drawer';
-import GridList from '@material-ui/core/GridList';
-import GridListTile from '@material-ui/core/GridListTile';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-
-import getUrlParameter from '/imports/util/getUrlParameter';
-
-import Log, { LogType } from '/imports/model/log.js';
-import LogTypeService from '/imports/service/log-type-service.js';
+import IconButton from '@material-ui/core/IconButton';
+import Button from '@material-ui/core/Button';
+// import Switch from '@material-ui/core/Switch';
+// import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import InputLabel from '@material-ui/core/InputLabel';
+import FormGroup from '@material-ui/core/FormGroup';
+import TextField from '@material-ui/core/TextField';
+import MenuItem from '@material-ui/core/MenuItem';
+import OutlinedInput from '@material-ui/core/OutlinedInput';
+import Menu from '@material-ui/core/Menu';
+import Divider from '@material-ui/core/Divider';
+import Drawer from '@material-ui/core/Drawer';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { css } from 'glamor';
+import Log, { LogType, LogsCollection } from '/imports/model/log.js';
+import LogTypeService from '/imports/service/log-type-service';
+import { createBrowserHistory } from 'history';
+import { Paper } from 'material-ui';
+const history = createBrowserHistory();
 
 const styles = theme => ({
   root: {
@@ -21,10 +35,6 @@ const styles = theme => ({
     overflow: 'hidden',
     backgroundColor: theme.palette.background.paper,
   },
-  gridList: {
-    width: 600,
-    height: 450,
-  },
   title: {
     fontSize: 14,
     textTransform: 'uppercase'
@@ -32,92 +42,271 @@ const styles = theme => ({
   pos: {
     marginBottom: 4,
   },
+  editLogMenuRoot: {
+    flexGrow: 1,
+  },
+  editLogMenuGrow: {
+    flexGrow: 1,
+  },
+  editLogMenuOptionsButton: {
+    marginLeft: -12,
+    marginRight: 20,
+  },
+  editLogSaveButton: {
+    marginTop: 10
+  }
 });
 
-class GridTileLogType extends Component {
-  constructor(props) {
-    super(props)
-  }
+const DRAWER_CSS = css({
+  marginTop: 100
+});
 
-  render() {
-    const { logType, onClick } = this.props;
-    const buttonInfo = LogTypeService.getInfo(logType);
-    return (
-      <Card raised={ false } onClick={ () => onClick() } style={{ boxShadow: 'none' }}>
-        <CardContent>
-          <Typography color="textSecondary" gutterBottom>
-            { buttonInfo.title }
-          </Typography>
-          <Typography variant="h2" component="h2">
-            { buttonInfo.icon }
-          </Typography>
-        </CardContent>
-      </Card>
-    );
-  }
-}
+const TITLE_ICON_CSS = css({
+  marginRight: 10
+});
+
+const FORM_CSS = css({
+  padding: 24
+});
 
 class EditLogDrawer extends Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      // UI
+      auth: true,
+      anchorEl: null,
+      labelWidth: 30,
+      // Asana Tasks
+      tasks: [],
+      // Editable fields
+      name: '',
+      taskId: 'None',
+      link: '',
+      timerStart: 0,
+      timerEnd: 0,
+      timerElapsed: 0
+    }
   }
-  
-  async addLog(logType, toggleAddLogDrawer, toggleEditLogDrawer) {
-    // expected url http://localhost:3000/?pid=1117763388304709
-    const projectId = getUrlParameter('pid');
 
-    if (!projectId || logType === 'CANCEL') {
-      return toggleAddLogDrawer();
-    }
-    // close the bottom drawer
-    toggleAddLogDrawer();
-
-    const log = new Log({
-      projectId,
-      userId: 'efg',
-      type: LogType[logType],
-      link: ''
+  setStateAsync(state) {
+    return new Promise((resolve) => {
+      this.setState(state, resolve)
     });
-    const logId = await Meteor.callPromise('logs.insert', log);
+  }
 
-    // open the top drawer
-    if (['PR_REVIEW','PR_SUBMIT', 'PROJECT_WORK'].includes(logType)) {
-      toggleEditLogDrawer(logId);
+  async componentDidMount() {
+    const projectId = getUrlParameter('pid');
+    if (projectId) {
+      const tasks = await Meteor.callPromise('tasks.findAll', projectId);
+      await this.setStateAsync({ tasks: tasks.data });
     }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    console.log(nextProps);
+    if (!!nextProps.log) {
+      this.setStateAsync({
+        name: nextProps.log.name,
+        taskId: nextProps.log.taskId,
+        link: nextProps.log.link,
+        timerStart: nextProps.log.timerStart,
+        timerEnd: nextProps.log.timerEnd,
+        timerElapsed: nextProps.log.timerElapsed,
+      });
+    }
+  }
+
+  handleChange = event => {
+    this.setState({ auth: event.target.checked });
+  };
+
+  handleTextInput = ({ event, field }) => {
+    const { value } = event.currentTarget;
+    this.setState({ [field]: value });
+  }
+
+  handleTaskChange = ({ event, field }) => {
+    const { value } = event.target;
+    this.setState({ [field]: value });
+  }
+
+  handleLogSave = async () => {
+    const log = Object.assign(this.props.log, {
+      name: this.state.name,
+      taskId: this.state.taskId,
+      link: this.state.link,
+      timerStart: this.state.timerStart,
+      timerEnd: this.state.timerEnd,
+      timerElapsed: this.state.timerElapsed
+    });
+    const updateId = await Meteor.callPromise('logs.update', log);
+    console.log(updateId);
+    if (updateId) {
+      this.handleClose();
+    }
+  }
+
+  handleMenu = event => {
+    this.setState({ anchorEl: event.currentTarget });
+  };
+
+  handleClose = () => {
+    const { toggleEditLogDrawer } = this.props;
+    this.setState({ anchorEl: null }, () => {
+      history.push(`/?pid=${ this.props.projectId }`);
+      toggleEditLogDrawer();
+    });
+  };
+
+  handleDeleteLog = async () => {
+    const { log, projectId, toggleEditLogDrawer } = this.props;
+    const removeId = await Meteor.callPromise('logs.remove', new Log(log));
+    if (removeId) {
+      this.setState({ anchorEl: null }, () => toggleEditLogDrawer());
+    }
+    history.push(`/?pid=${projectId}`);
+  }
+
+  renderEditLogForm(classes) {
+    const { log, toggleEditLogDrawer } = this.props;
+    const { auth, anchorEl } = this.state;
+    const logType = LogType.getIdentifier(log.type);
+    const logTypeInfo = LogTypeService.getInfo(logType);
+    const open = Boolean(anchorEl);
+    if (!log) {
+      return null;
+    }
+    return (
+      <div className={ classes.editLogMenuRoot }>
+        <AppBar position="static" color="secondary">
+          <Toolbar>
+            <IconButton
+              className={ classes.editLogMenuOptionsButton }
+              color="inherit"
+              aria-label="Menu"
+              onClick={ () => this.handleClose(toggleEditLogDrawer) }>
+              <FontAwesomeIcon icon="long-arrow-alt-left" />
+            </IconButton>
+            <div className={ TITLE_ICON_CSS }>
+              { logTypeInfo.icon }
+            </div>
+            <Typography variant="h6" color="inherit" className={ classes.editLogMenuGrow }>
+              { logTypeInfo.title }
+            </Typography>
+            { auth && (
+              <div>
+                <IconButton
+                  aria-owns={ open ? 'menu-appbar' : undefined }
+                  aria-haspopup="true"
+                  onClick={ this.handleMenu }
+                  color="inherit">
+                  <FontAwesomeIcon icon="ellipsis-v" />
+                </IconButton>
+                <Menu
+                  id="menu-appbar"
+                  anchorEl={ anchorEl }
+                  anchorOrigin={ {
+                    vertical: 'top',
+                    horizontal: 'right',
+                  } }
+                  transformOrigin={ {
+                    vertical: 'top',
+                    horizontal: 'right',
+                  } }
+                  open={ open }
+                  onClose={ () => this.handleClose(toggleEditLogDrawer) }>
+                  <MenuItem onClick={ () => this.handleClose(toggleEditLogDrawer) }>Close</MenuItem>
+                  <Divider />
+                  <MenuItem onClick={ () => this.handleDeleteLog() }>Delete</MenuItem>
+                </Menu>
+              </div>
+            ) }
+          </Toolbar>
+        </AppBar>
+        <Paper className={ FORM_CSS }>
+          <FormGroup>
+            {/* <FormControlLabel
+              control={
+                <Switch checked={ auth } onChange={ this.handleChange } aria-label="LoginSwitch" />
+              }
+              label={ auth ? 'Logout' : 'Login' }
+            /> */}
+            <TextField
+              id="outlined-name"
+              label="Name"
+              placeholder={ logTypeInfo.title }
+              className={ classes.textField }
+              value={ this.state.name }
+              onChange={ event => this.handleTextInput({ event, field: 'name' }) }
+              margin="normal"
+              variant="outlined"
+            />
+            <FormControl variant="outlined" className={ classes.formControl }>
+              <InputLabel
+                ref={ ref => {
+                  this.InputLabelRef = ref;
+                } }
+                htmlFor="task-select-list">
+                Task
+              </InputLabel>
+              { this.state.tasks.length && <Select
+                value={ this.state.taskId || this.state.tasks[0].id }
+                onChange={ event => this.handleTaskChange({ event, field: 'taskId' }) }
+                input={
+                  <OutlinedInput
+                    labelWidth={ this.state.labelWidth }
+                    name="tasks"
+                    id="task-select-list"
+                  />
+                }>
+                  <MenuItem value="">
+                    <em>None</em>
+                  </MenuItem>
+                  { this.state.tasks.map((task) => <MenuItem key={ `${ task.id }-task` } value={ task.id }>{ task.name }</MenuItem>) }
+                </Select>
+              }
+            </FormControl>
+            <TextField
+              id="outlined-link"
+              label="Link"
+              placeholder="link"
+              className={ classes.textField }
+              value={ this.state.link }
+              onChange={ event => this.handleTextInput({ event, field: 'link' }) }
+              margin="normal"
+              variant="outlined"
+            />
+          </FormGroup>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={ () => this.handleLogSave() }
+            className={ classes.editLogSaveButton }>
+              Save
+          </Button>
+        </Paper>
+      </div>
+    );
   }
 
   render() {
-    const { classes, open, toggleAddLogDrawer, toggleEditLogDrawer } = this.props;
-    const logTypes = LogType.getIdentifiers();
-    if (!logTypes.includes('CANCEL')) {
-      logTypes.push('CANCEL');
+    const { classes, open, log } = this.props;
+    if (!log) {
+      return null;
     }
-
-    const buttonList = (
-      <div className={ classes.root }>
-        <GridList cellHeight={ 130 } className={ classes.gridList } cols={ 5 } style={{ margin: 0, padding: 0 }}>
-          { logTypes.map((logType, index) => (
-            <GridListTile key={ index } style={{ margin: 0, padding: 0 }}>
-              <GridTileLogType
-                logType={logType}
-                onClick={ () => this.addLog(logType, toggleAddLogDrawer, toggleEditLogDrawer) } />
-            </GridListTile>
-          )) }
-        </GridList>
-      </div>
-    );
-
     return (
       <div>
         <Drawer
           anchor="top"
           open={ open }
-          color="primary">
+          color="primary"
+          classes={ DRAWER_CSS }>
           <div
             tabIndex={ 0 }
             role="button">
-            { buttonList }
+            { this.renderEditLogForm(classes) }
           </div>
         </Drawer>
       </div>
@@ -131,4 +320,13 @@ EditLogDrawer.propTypes = {
   open: PropTypes.bool.isRequired
 };
 
-export default withStyles(styles)(EditLogDrawer);
+export default EditLogDrawerContainer = withTracker(() => {
+  
+  const _id = getUrlParameter('id'); 
+  Meteor.subscribe('log', { _id });
+  
+  return {
+    log: LogsCollection.find({ _id }).fetch()[0],
+    projectId: getUrlParameter('pid')
+  };
+})(withStyles(styles)(EditLogDrawer));

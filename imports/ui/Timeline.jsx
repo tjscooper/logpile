@@ -8,13 +8,14 @@ import 'react-vertical-timeline-component/style.min.css';
 import { css } from 'glamor';
 import ScrollToBottom from 'react-scroll-to-bottom';
 import getUrlParameter from '/imports/util/getUrlParameter';
-
+import Button from '@material-ui/core/Button';
 import { LogType } from '/imports/model/log';
 import LogTypeService from '/imports/service/log-type-service';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const ROOT_CSS = css({
   marginTop: 0,
-  height: 850,
+  height: window.innerHeight - 50,
   width: '100%'
 });
 
@@ -29,21 +30,22 @@ const LINK_CSS = css({
 class Timeline extends Component {
 
   render() {
-    if (!this.props.logs) {
+    const { logs, toggleEditLogDrawer } = this.props;
+    if (!logs) {
       return null;
     }
     return (
       <div className={ TIMELINE_CSS }>
         <ScrollToBottom className={ ROOT_CSS }>
           <VerticalTimeline>
-            { this.props.logs.map(log => this.makeLogElement(log)) }
+            { logs.map(log => this.makeLogElement(log, toggleEditLogDrawer)) }
           </VerticalTimeline>
         </ScrollToBottom>
       </div>
     );
   }
 
-  makeLogElement(log) {
+  makeLogElement(log, toggleEditLogDrawer) {
     let logType = LogType.getIdentifier(log.type);
     const buttonInfo = LogTypeService.getInfo(logType);
     return (
@@ -59,25 +61,30 @@ class Timeline extends Component {
         icon={ buttonInfo.icon }>
           <Link
             key={ log._id }
-            to={ { pathname: '/', search: `${ window.location.search }&id=${ log._id }` } }
-            className={ LINK_CSS }>
-              <h3 className="vertical-timeline-element-title">{ buttonInfo.title }</h3>
-              <h4 className="vertical-timeline-element-subtitle">{ log.projectId }</h4>
+            to={ { pathname: '/', search: `?pid=${ log.projectId }&id=${ log._id }` }}
+            className={ LINK_CSS }
+            onClick={ toggleEditLogDrawer }>
+              <h3 className="vertical-timeline-element-title">{ log.name || buttonInfo.title }</h3>
+              <h4 className="vertical-timeline-element-subtitle"></h4>
           </Link>
-          <a
-            key={ `${log._id}-project-link` }
-            target="_blank"
-            href={ `https://app.asana.com/0/${ log.projectId }/list` }
-            className={ LINK_CSS }>
-            <p>{ log.link }</p>
-          </a>
-          <a
-            key={`${ log._id }-link`}
-            target="_blank"
-            href={ log.link }
-            className={ LINK_CSS }>
-              <p>{ log.link }</p>
-          </a>
+          { log.projectId && <Button color="default">
+              <Link 
+                key={ `${ log.id }-project` }
+                to={ window.location }
+                onClick={ () => window.open(`https://app.asana.com/0/${ log.projectId }/list`, '_blank') }>
+                  <FontAwesomeIcon icon="project-diagram" />
+              </Link>
+            </Button>
+          }
+          { log.link && <Button color="default">
+              <Link
+                key={ `${ log.id }-link` }
+                to=''
+                onClick={ () => window.open(log.link, '_blank') }>
+                <FontAwesomeIcon icon="link" />
+              </Link>
+            </Button>
+          }
       </VerticalTimelineElement>
     );
   }
@@ -85,10 +92,14 @@ class Timeline extends Component {
 
 export default TimelineContainer = withTracker(() => {
 
-  const projectId = getUrlParameter('pid') || null;
-  
+  let query = {};
+  const projectId = getUrlParameter('pid');
+  if (projectId && projectId !== 'all') {
+    query['projectId'] = projectId;
+  }
+
   Meteor.subscribe('logs');
   return {
-    logs: LogsCollection.find({ projectId }, { sort: { createdAt: 1 } }).fetch(),
+    logs: LogsCollection.find(query, { sort: { createdAt: 1 } }).fetch(),
   };
 })(Timeline);

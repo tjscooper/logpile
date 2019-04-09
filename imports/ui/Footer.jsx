@@ -31,19 +31,10 @@ const styles = theme => ({
 
 class Footer extends Component {
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      open: false
-    };
-  }
-  
-  toggleAddLogDrawer() {
-    this.setState({ open: !this.state.open });
-  }
-
   render() {
-    const { classes } = this.props;
+    const { 
+      classes, openAddLogDrawer, openEditLogDrawer, toggleAddLogDrawer, toggleEditLogDrawer
+    } = this.props;
     return (
       <React.Fragment>
         <AppBar position="fixed" color="primary" className={ classes.appBar }>
@@ -52,14 +43,18 @@ class Footer extends Component {
               color="secondary"
               aria-label="Add"
               className={ classes.fabButton }
-              onClick={ () => this.toggleAddLogDrawer() }>
+              onClick={ () => toggleAddLogDrawer() }>
               <FontAwesomeIcon icon="bullseye" style={{ fontSize: 40 }}/>
             </Fab>
           </Toolbar>
         </AppBar>
         <AddLogDrawer
-          open={ this.state.open }
-          toggleAddLogDrawer={ () => this.toggleAddLogDrawer() } />
+          open={ openAddLogDrawer }
+          toggleAddLogDrawer={ () => toggleAddLogDrawer() }
+          toggleEditLogDrawer={ () => toggleEditLogDrawer() } />
+        <EditLogDrawer
+          open={ openEditLogDrawer }
+          toggleEditLogDrawer={ () => toggleEditLogDrawer() } />
       </React.Fragment>
     );
   }

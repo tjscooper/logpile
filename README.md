@@ -5,16 +5,19 @@ Intro.. Description.. Screenshots
 ##### TO DEVELOP
 
 * Features
-  - Top Drawer
+  - Top Drawer √
   - Edit Log
-    - Select Task (from Asana)
-    - Add Link
-  - Delete Log
+    - Add Name, TaskId to Log model √ 
+    - Select Task (from Asana) √
+    - Add Link √
+    - Start Timer (rough-in)
+    - Save Button √
+  - Delete Log √
   - Log Timer
     - Start / Pause / Stop
     - Display TimerElapsed (formatted)
   - Filters
-    - By Project
+    - By Project √
     - By Multi-select LogType
   - Sort
     - By Created
@@ -27,7 +30,7 @@ Intro.. Description.. Screenshots
 * Dynamic Log Types (database driven)
 * Authentication
 * Routes
-  - Timeline
+  - Timeline √
   - Settings
   - Stats
   - About
@@ -36,7 +39,7 @@ Intro.. Description.. Screenshots
   - Asana
   - Slack
 * Fit and Finish
-  - Grid icons for Add Log (fill out the space)
+  - Grid icons for Add Log (fill out the space) √
   - Repeating wallpaper (css trick, perhaps)
 
 ##### TO DO

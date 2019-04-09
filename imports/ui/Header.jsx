@@ -17,8 +17,9 @@ const styles = theme => ({
   title: {
     marginLeft: '0px',
     display: 'none',
+    textDecoration: 'none',
     [theme.breakpoints.up('sm')]: {
-      display: 'inline-block',
+      display: 'inline'
     },
   },
   grow: {
@@ -38,18 +39,24 @@ const styles = theme => ({
     textDecoration: 'none'
   },
   logo: {
-    marginRight: 16
+    marginRight: 16,
+    display: 'inline'
+  },
+  logoLink: {
+    color: '#fff',
+    display: 'inline',
+    textDecoration: 'none'
   }
 });
 
 class Header extends React.Component {
 
   state = {
-    projects: [],
-    project: {
-      name: 'All Projects',
-      id: null
+    query: {
+      allProjects: { name: 'All Projects', id: 'all' }
     },
+    projects: [],
+    project: {},
     menuEl: null
   };
 
@@ -63,7 +70,16 @@ class Header extends React.Component {
 
   async componentDidMount() {
     const projects = await Meteor.callPromise('projects.findAll');
-    await this.setStateAsync({ projects: projects.data });
+    const { allProjects } = this.state.query;
+    if (projects.data 
+      && !projects.data.find((project) => project.id === allProjects.id)) {
+        projects.data.unshift(allProjects);
+        await this.setStateAsync({ projects: projects.data, project: allProjects });
+    }
+  }
+
+  handleLogoClick = async () => {
+    await this.setStateAsync({ project: this.state.query.allProjects });
   }
 
   handleMenuClick = event => {
@@ -112,12 +128,17 @@ class Header extends React.Component {
       <div className={ this.classes.root }>
         <AppBar position="fixed">
           <Toolbar>
-            <div className={ this.classes.logo }>
-              <FontAwesomeIcon icon="bullseye" />
-            </div>
-            <Typography className={ this.classes.title } variant="h6" color="inherit" noWrap>
-              Logpile
-            </Typography>
+            <Link
+              to={ { pathname: '/', search: '' } }
+              className={ this.classes.logoLink }
+              onClick={ this.handleLogoClick }>
+                <div className={ this.classes.logo }>
+                  <FontAwesomeIcon icon="bullseye" />
+                </div>
+                <Typography className={ this.classes.title } variant="h6" color="inherit" noWrap>
+                  Logpile
+                </Typography>
+            </Link>
             <div className={ this.classes.grow } />
             { 
               projects.length 

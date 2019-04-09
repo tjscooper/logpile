@@ -13,6 +13,9 @@ import getUrlParameter from '/imports/util/getUrlParameter';
 import Log, { LogType } from '/imports/model/log.js';
 import LogTypeService from '/imports/service/log-type-service.js';
 
+import { createBrowserHistory } from 'history';
+const history = createBrowserHistory();
+
 const styles = theme => ({
   root: {
     display: 'flex-end',
@@ -73,10 +76,9 @@ class AddLogDrawer extends Component {
   }
   
   async addLog(logType, toggleAddLogDrawer, toggleEditLogDrawer) {
-    // expected url http://localhost:3000/?pid=1117763388304709
     const projectId = getUrlParameter('pid');
 
-    if (!projectId || logType === 'CANCEL') {
+    if (!projectId || projectId && projectId === 'all' || logType === 'CANCEL') {
       return toggleAddLogDrawer();
     }
     // close the bottom drawer
@@ -91,8 +93,14 @@ class AddLogDrawer extends Component {
     const logId = await Meteor.callPromise('logs.insert', log);
 
     // open the top drawer
-    if (['PR_REVIEW','PR_SUBMIT', 'PROJECT_WORK'].includes(logType)) {
-      toggleEditLogDrawer(logId);
+    if (logId
+        && projectId !== 'all'
+        && ['PR_REVIEW','PR_SUBMIT', 'PROJECT_WORK'].includes(logType)) {
+          Meteor.setTimeout(() => {
+            console.log(this);
+            history.push(`/?pid=${ projectId }&id=${ logId }`);
+            toggleEditLogDrawer();
+          }, 1000);
     }
   }
 
@@ -137,6 +145,7 @@ class AddLogDrawer extends Component {
 AddLogDrawer.propTypes = {
   classes: PropTypes.object.isRequired,
   toggleAddLogDrawer: PropTypes.func.isRequired,
+  toggleEditLogDrawer: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired
 };
 
