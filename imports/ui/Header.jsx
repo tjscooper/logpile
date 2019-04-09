@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -32,6 +33,9 @@ const styles = theme => ({
   },
   menuButtonTitle: {
     marginLeft: 16
+  },
+  menuItemLink: {
+    textDecoration: 'none'
   },
   logo: {
     marginRight: 16
@@ -86,12 +90,16 @@ class Header extends React.Component {
         onClose={ this.handleMenuClose }>
         {
           projects.map((project) => (
-            <MenuItem
+            <Link
               key={ project.id }
-              value={ project.id }
-              onClick={ () => this.handleMenuSelect(project) }>
-                { project.name }
-            </MenuItem>
+              to={ { pathname: '/', search: `?pid=${ project.id }` } }
+              className={ this.classes.menuItemLink }>
+              <MenuItem
+                value={ project.id }
+                onClick={ () => this.handleMenuSelect(project) }>
+                  { project.name }
+              </MenuItem>
+            </Link>
           ))
         }
       </Menu>
@@ -100,7 +108,6 @@ class Header extends React.Component {
 
   render() {
     const { menuEl, projects, project } = this.state;
-    
     return (
       <div className={ this.classes.root }>
         <AppBar position="fixed">

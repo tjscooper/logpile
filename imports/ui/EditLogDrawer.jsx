@@ -15,24 +15,15 @@ import LogTypeService from '/imports/service/log-type-service.js';
 
 const styles = theme => ({
   root: {
-    display: 'flex-end',
+    display: 'flex',
     flexWrap: 'wrap',
-    justifyContent: 'space-evenly',
+    justifyContent: 'space-around',
     overflow: 'hidden',
     backgroundColor: theme.palette.background.paper,
-    textAlign: 'center'
   },
   gridList: {
-    width: '100%',
-    height: 150,
-  },
-  gridListItem: {
-    display: 'flex',
-    justifyContent: 'center',
-    flexDirection: 'column',
-    textAlign: 'center',
-    marginTop: 12,
-    opacity: 0.8
+    width: 600,
+    height: 450,
   },
   title: {
     fontSize: 14,
@@ -66,7 +57,7 @@ class GridTileLogType extends Component {
   }
 }
 
-class AddLogDrawer extends Component {
+class EditLogDrawer extends Component {
 
   constructor(props) {
     super(props);
@@ -105,9 +96,9 @@ class AddLogDrawer extends Component {
 
     const buttonList = (
       <div className={ classes.root }>
-        <GridList className={ classes.gridList } cols={ 10 }>
+        <GridList cellHeight={ 130 } className={ classes.gridList } cols={ 5 } style={{ margin: 0, padding: 0 }}>
           { logTypes.map((logType, index) => (
-            <GridListTile key={ index } className={ classes.gridListItem }>
+            <GridListTile key={ index } style={{ margin: 0, padding: 0 }}>
               <GridTileLogType
                 logType={logType}
                 onClick={ () => this.addLog(logType, toggleAddLogDrawer, toggleEditLogDrawer) } />
@@ -120,7 +111,7 @@ class AddLogDrawer extends Component {
     return (
       <div>
         <Drawer
-          anchor="bottom"
+          anchor="top"
           open={ open }
           color="primary">
           <div
@@ -134,10 +125,10 @@ class AddLogDrawer extends Component {
   }
 }
 
-AddLogDrawer.propTypes = {
+EditLogDrawer.propTypes = {
   classes: PropTypes.object.isRequired,
-  toggleAddLogDrawer: PropTypes.func.isRequired,
+  toggleEditLogDrawer: PropTypes.func.isRequired,
   open: PropTypes.bool.isRequired
 };
 
-export default withStyles(styles)(AddLogDrawer);
+export default withStyles(styles)(EditLogDrawer);

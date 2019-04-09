@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import Header from '/imports/ui/Header';
@@ -22,15 +23,20 @@ const muiTheme = getMuiTheme({
 });
 
 export default class App extends Component {
+
   render() {
     return (
-      <MuiThemeProvider muiTheme={ muiTheme }>
-        <div style={{ height: '100%' }}>
-          <Header />
-          <Timeline />
-          <Footer />
-        </div>
-      </MuiThemeProvider>
+      <Router>
+        <MuiThemeProvider muiTheme={ muiTheme }>
+          <div style={ { height: '100%' } }>
+            <Header />
+            <Switch>
+              <Route exact name="timeline" path="/" component={ Timeline } />
+            </Switch>
+            <Footer />
+          </div>
+        </MuiThemeProvider>
+      </Router>
     );
   }
 }

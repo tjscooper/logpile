@@ -5,6 +5,7 @@ import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Fab from '@material-ui/core/Fab';
 import AddLogDrawer from './AddLogDrawer';
+import EditLogDrawer from './EditLogDrawer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const styles = theme => ({
