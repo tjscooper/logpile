@@ -4,8 +4,8 @@ import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Fab from '@material-ui/core/Fab';
-import RadioButtonChecked from '@material-ui/icons/RadioButtonChecked';
 import AddLogDrawer from './AddLogDrawer';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const styles = theme => ({
   appBar: {
@@ -19,7 +19,7 @@ const styles = theme => ({
   fabButton: {
     position: 'absolute',
     zIndex: 1,
-    top: -50,
+    top: -28,
     left: 0,
     right: 0,
     margin: '0 auto',
@@ -48,12 +48,11 @@ class Footer extends Component {
         <AppBar position="fixed" color="primary" className={ classes.appBar }>
           <Toolbar className={ classes.toolbar }>
             <Fab 
-              size="large"
               color="secondary"
               aria-label="Add"
               className={ classes.fabButton }
               onClick={ () => this.toggleAddLogDrawer() }>
-              <RadioButtonChecked />
+              <FontAwesomeIcon icon="bullseye" style={{ fontSize: 40 }}/>
             </Fab>
           </Toolbar>
         </AppBar>

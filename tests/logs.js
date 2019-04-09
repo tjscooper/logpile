@@ -2,7 +2,7 @@
 
 import { Meteor } from 'meteor/meteor';
 import { assert } from 'chai';
-import Log, { LogType, LogsCollection } from '/imports/model/log.js';
+import Log, { LogType, LogsCollection } from '../imports/model/log.js';
 
 if (Meteor.isServer) {
   describe('Logs', () => {

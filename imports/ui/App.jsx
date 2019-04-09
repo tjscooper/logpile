@@ -5,9 +5,15 @@ import Header from '/imports/ui/Header';
 import Timeline from '/imports/ui/Timeline';
 import Footer from '/imports/ui/Footer';
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faTableTennis, faVoteYea } from '@fortawesome/free-solid-svg-icons'
+import { 
+  faTableTennis, faVoteYea, faCode, faProjectDiagram, faComments,
+  faBell, faHeadset, faCoffee, faBong, faWindowClose, faBullseye
+} from '@fortawesome/free-solid-svg-icons'
 
-library.add([faTableTennis, faVoteYea]);
+library.add([
+  faTableTennis, faVoteYea, faCode, faProjectDiagram, faComments,
+  faBell, faHeadset, faCoffee, faBong, faWindowClose, faBullseye
+]);
 
 const muiTheme = getMuiTheme({
   palette: {

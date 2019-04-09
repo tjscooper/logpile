@@ -4,10 +4,12 @@ import { withStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
-import Button from '@material-ui/core/Button';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import Typography from '@material-ui/core/Typography';
 
 import Log, { LogType } from '/imports/model/log.js';
+import LogTypeService from '/imports/service/log-type-service.js';
 
 const styles = theme => ({
   root: {
@@ -18,27 +20,17 @@ const styles = theme => ({
     backgroundColor: theme.palette.background.paper,
   },
   gridList: {
-    width: '100%',
-    height: 250,
+    width: 600,
+    height: 450,
+  },
+  title: {
+    fontSize: 14,
+    textTransform: 'uppercase'
+  },
+  pos: {
+    marginBottom: 4,
   },
 });
-
-const getButtonInfo = (logType) => {
-  let icon;
-  let title;
-  switch(logType) {
-    case 'PR_REVIEW':
-      icon = <FontAwesomeIcon icon='vote-yea' />;
-      title = 'Review Code';
-      break;
-    // 8
-    case 'PING_PONG':
-      icon = <FontAwesomeIcon icon='table-tennis' />;
-      title = 'Play Ping Pong';
-      break;
-  }
-  return { icon, title };
-}
 
 class GridTileLogType extends Component {
   constructor(props) {
@@ -47,15 +39,20 @@ class GridTileLogType extends Component {
 
   render() {
     const { logType, onClick } = this.props;
-    const buttonInfo = getButtonInfo(logType);
+    const buttonInfo = LogTypeService.getInfo(logType);
     return (
-      <Button onClick={ () => onClick() }>
-        { buttonInfo.icon }
-        { buttonInfo.title }
-      </Button>
+      <Card raised={ false } onClick={ () => onClick() } style={{ boxShadow: 'none' }}>
+        <CardContent>
+          <Typography color="textSecondary" gutterBottom>
+            { buttonInfo.title }
+          </Typography>
+          <Typography variant="h2" component="h2">
+            { buttonInfo.icon }
+          </Typography>
+        </CardContent>
+      </Card>
     );
   }
-
 }
 
 class AddLogDrawer extends Component {
@@ -65,12 +62,16 @@ class AddLogDrawer extends Component {
   }
   
   async addLogTest(logType, toggleAddLogDrawer) {
-    const logId = await Meteor.callPromise('logs.insert', new Log({
+    if (logType === 'CANCEL') {
+      return toggleAddLogDrawer();
+    }
+    const log = new Log({
       projectId: 'abc',
       userId: 'efg',
       type: LogType[logType],
       link: 'http://asana.com'
-    }));
+    });
+    const logId = await Meteor.callPromise('logs.insert', log);
     console.log('logId', logId);
     toggleAddLogDrawer();
   }
@@ -78,12 +79,15 @@ class AddLogDrawer extends Component {
   render() {
     const { classes, open, toggleAddLogDrawer } = this.props;
     const logTypes = LogType.getIdentifiers();
+    if (!logTypes.includes('CANCEL')) {
+      logTypes.push('CANCEL');
+    }
 
     const buttonList = (
       <div className={ classes.root }>
-        <GridList cellHeight={ 160 } className={ classes.gridList } cols={ 5 }>
+        <GridList cellHeight={ 130 } className={ classes.gridList } cols={ 5 } style={{ margin: 0, padding: 0 }}>
           { logTypes.map((logType, index) => (
-            <GridListTile key={ index }>
+            <GridListTile key={ index } style={{ margin: 0, padding: 0 }}>
               <GridTileLogType
                 logType={logType}
                 onClick={ () => this.addLogTest(logType, toggleAddLogDrawer) } />
@@ -97,7 +101,8 @@ class AddLogDrawer extends Component {
       <div>
         <Drawer
           anchor="bottom"
-          open={ open }>
+          open={ open }
+          color="primary">
           <div
             tabIndex={ 0 }
             role="button">

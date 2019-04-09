@@ -4,5 +4,9 @@ body {
 }
 
 ::-webkit-scrollbar { 
-    display: none; 
+  display: none; 
+}
+
+.vertical-timeline > .vertical-timeline-element {
+  margin: 1em;
 }
