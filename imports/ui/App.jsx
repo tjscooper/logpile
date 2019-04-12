@@ -10,14 +10,14 @@ import { css } from 'glamor';
 import { 
   faTableTennis, faVoteYea, faCode, faProjectDiagram, faComments,
   faBell, faHeadset, faCoffee, faBong, faWindowClose, faBullseye,
-  faEllipsisV, faLink, faLongArrowAltLeft, faSync
+  faEllipsisV, faLink, faLongArrowAltLeft, faSync, faTasks
 } from '@fortawesome/free-solid-svg-icons'
 
 
 library.add([
   faTableTennis, faVoteYea, faCode, faProjectDiagram, faComments,
   faBell, faHeadset, faCoffee, faBong, faWindowClose, faBullseye,
-  faEllipsisV, faLink, faLongArrowAltLeft, faSync
+  faEllipsisV, faLink, faLongArrowAltLeft, faSync, faTasks
 ]);
 
 const muiTheme = getMuiTheme();

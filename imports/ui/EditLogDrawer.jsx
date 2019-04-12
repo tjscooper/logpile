@@ -7,6 +7,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
 import Button from '@material-ui/core/Button';
+import { Link } from 'react-router-dom';
 // import Switch from '@material-ui/core/Switch';
 // import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
@@ -102,9 +103,7 @@ class EditLogDrawer extends Component {
   async componentDidMount() {
     const projectId = getUrlParameter('pid');
     const tasks = await Meteor.callPromise('tasks.findAll', projectId);
-    if (tasks && tasks.data && tasks.data.length) {
-      await this.setStateAsync({ tasks: tasks.data, projectId });
-    }
+    this.setTasks(projectId, tasks);
   }
 
   async componentDidUpdate(prevProps, prevState) {
@@ -115,9 +114,14 @@ class EditLogDrawer extends Component {
       || (!isEqual(this.state.tasks, prevState.tasks))
     ) {
       const tasks = await Meteor.callPromise('tasks.findAll', projectId);
-      if (tasks && tasks.data && tasks.data.length) {
-        await this.setStateAsync({ tasks: tasks.data, projectId });
-      }
+      this.setTasks(projectId, tasks);
+    }
+  }
+
+  async setTasks(projectId, tasks) {
+    const incompleteTasks = tasks ? tasks.data.filter(task => !task.completed) : [];
+    if (incompleteTasks && incompleteTasks.length) {
+      return await this.setStateAsync({ tasks: incompleteTasks, projectId });
     }
   }
 
@@ -125,6 +129,7 @@ class EditLogDrawer extends Component {
     if (!!nextProps.log) {
       this.setStateAsync({
         name: nextProps.log.name,
+        projectId: nextProps.projectId,
         taskId: nextProps.log.taskId,
         link: nextProps.log.link,
         notes: nextProps.log.notes,
@@ -153,6 +158,7 @@ class EditLogDrawer extends Component {
     const log = Object.assign(this.props.log, {
       name: this.state.name,
       taskId: this.state.taskId,
+      projectId: this.state.projectId,
       link: this.state.link,
       notes: this.state.notes,
       timerStart: this.state.timerStart,
@@ -279,6 +285,14 @@ class EditLogDrawer extends Component {
                     </Select>
                   </FormControl>
                 : null 
+              }
+            { this.state.taskId && <Button color="default">
+                <Link
+                  to={ window.location }
+                  onClick={ () => window.open(`https://app.asana.com/0/${ this.state.projectId }/${ this.state.taskId }/f`, '_blank') }>
+                  <FontAwesomeIcon icon="tasks" /> View Task
+                </Link>
+              </Button>
               }
             <TextField
               id="outlined-link"

@@ -38,7 +38,7 @@ class Timeline extends Component {
 
   render() {
     const { logs, projectId, toggleEditLogDrawer } = this.props;
-    if (!logs) {
+    if (!logs || !logs.length) {
       return null;
     }
     return (
@@ -83,6 +83,15 @@ class Timeline extends Component {
                 to={ window.location }
                 onClick={ () => window.open(`https://app.asana.com/0/${ projectId }/list`, '_blank') }>
                   <FontAwesomeIcon icon="project-diagram" />
+              </Link>
+            </Button>
+          }
+          { log.taskId && <Button color="default">
+              <Link
+                key={ `${log.id}-task` }
+                to={ window.location }
+                onClick={ () => window.open(`https://app.asana.com/0/${ projectId }/${ log.taskId }/f`, '_blank') }>
+                <FontAwesomeIcon icon="tasks" />
               </Link>
             </Button>
           }

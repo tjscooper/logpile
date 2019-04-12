@@ -10,3 +10,48 @@ body {
 .vertical-timeline > .vertical-timeline-element {
   margin: 1em;
 }
+
+/* Grid for Add Drawer Actions */
+
+.container {
+  max-width: 1150px;
+  margin: 0 auto;
+}
+.grid-row {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: flex-start;
+}
+
+.grid-item {
+  height: 125px;
+  flex-basis: 20%;
+  -ms-flex: auto;
+  width: 125px;
+  position: relative;
+  padding: 10px;
+  box-sizing: border-box;
+  text-transform: uppercase;
+  font-weight: 200;
+}
+
+@media(max-width: 1333px) {
+  .grid-item {
+    flex-basis: 20%;
+  }
+}
+@media(max-width: 1073px) {
+   .grid-item {
+    flex-basis: 20%;
+  }
+}
+@media(max-width: 815px) {
+  .grid-item {
+    flex-basis: 25%;
+  }
+}
+@media(max-width: 555px) {
+  .grid-item {
+    flex-basis: 10%;
+  }
+}

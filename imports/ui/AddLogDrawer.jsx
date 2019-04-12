@@ -46,7 +46,6 @@ const styles = theme => ({
 });
 
 const PROJECT_TYPE_LOGS = ['PR_REVIEW', 'PR_SUBMIT', 'PROJECT_WORK', 'MEETING'];
-
 class GridTileLogType extends Component {
   
   constructor(props) {
@@ -70,7 +69,6 @@ class GridTileLogType extends Component {
     );
   }
 }
-
 class AddLogDrawer extends Component {
 
   constructor(props) {
@@ -93,7 +91,8 @@ class AddLogDrawer extends Component {
       type: LogType[logType],
       link: '',
       name: '',
-      taskId: ''
+      taskId: '',
+      notes: ''
     });
     const logId = await Meteor.callPromise('logs.insert', log);
 
@@ -107,43 +106,39 @@ class AddLogDrawer extends Component {
     }
   }
 
+  renderGridItem = (logType) => {
+    const { toggleAddLogDrawer, toggleEditLogDrawer } = this.props;
+    return (
+      <GridTileLogType
+        logType={ logType }
+        onClick={ () => {
+          const projectId = getUrlParameter('pid');
+          if (logType === 'CANCEL') {
+            return toggleAddLogDrawer();
+          } else if (!projectId && PROJECT_TYPE_LOGS.includes(logType)) {
+            this.props.enqueueSnackbar('A PROJECT MUST BE SELECTED', {
+              variant: 'error',
+              preventDuplicate: true,
+              anchorOrigin: {
+                vertical: 'top',
+                horizontal: 'center',
+              },
+            });
+            return toggleAddLogDrawer();
+          } else {
+            return this.addLog(logType, toggleAddLogDrawer, toggleEditLogDrawer);
+          }
+        } } />
+    );
+  };
+
   render() {
-    const { classes, open, toggleAddLogDrawer, toggleEditLogDrawer } = this.props;
+    const { open } = this.props;
     const logTypes = LogType.getIdentifiers();
 
     if (!logTypes.includes('CANCEL')) {
       logTypes.push('CANCEL');
     }
-    const buttonList = (
-      <div className={ classes.root }>
-        <GridList className={ classes.gridList } cols={ 10 }>
-          { logTypes.map((logType, index) => (
-            <GridListTile key={ index } className={ classes.gridListItem }>
-              <GridTileLogType
-                logType={logType}
-                onClick={ () => {
-                  const projectId = getUrlParameter('pid');
-                  if (logType === 'CANCEL') {
-                    return toggleAddLogDrawer();
-                  } else if (!projectId && PROJECT_TYPE_LOGS.includes(logType)) {
-                    this.props.enqueueSnackbar('A PROJECT MUST BE SELECTED', {
-                      variant: 'error',
-                      preventDuplicate: true,
-                      anchorOrigin: {
-                        vertical: 'top',
-                        horizontal: 'center',
-                      },
-                    });
-                    return toggleAddLogDrawer();
-                  } else {
-                    return this.addLog(logType, toggleAddLogDrawer, toggleEditLogDrawer);
-                  }
-                } } />
-            </GridListTile>
-          )) }
-        </GridList>
-      </div>
-    );
 
     return (
       <div>
@@ -154,7 +149,17 @@ class AddLogDrawer extends Component {
           <div
             tabIndex={ 0 }
             role="button">
-            { buttonList }
+              <div className="container">
+                <div className="grid-row">
+                  { logTypes.map((logType, index) => {
+                    return (
+                        <div className="grid-item">
+                          { this.renderGridItem(logType) }
+                        </div>
+                      );
+                  }) }
+                </div>
+              </div>
           </div>
         </Drawer>
       </div>

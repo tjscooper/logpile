@@ -42,7 +42,8 @@ const styles = theme => ({
   },
   logo: {
     marginRight: 16,
-    display: 'inline'
+    display: 'inline',
+    fontSize: 24
   },
   logoLink: {
     color: '#fff',
