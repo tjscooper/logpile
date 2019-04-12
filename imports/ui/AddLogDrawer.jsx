@@ -45,6 +45,8 @@ const styles = theme => ({
   },
 });
 
+const PROJECT_TYPE_LOGS = ['PR_REVIEW', 'PR_SUBMIT', 'PROJECT_WORK', 'MEETING'];
+
 class GridTileLogType extends Component {
   
   constructor(props) {
@@ -76,10 +78,14 @@ class AddLogDrawer extends Component {
   }
   
   async addLog(logType, toggleAddLogDrawer, toggleEditLogDrawer) {
-    const projectId = getUrlParameter('pid');
+    let projectId = getUrlParameter('pid');
 
     // close the bottom drawer
     toggleAddLogDrawer();
+
+    if (!PROJECT_TYPE_LOGS.includes(logType)) {
+      projectId = '';
+    }
 
     const log = new Log({
       projectId,
@@ -93,7 +99,7 @@ class AddLogDrawer extends Component {
 
     // open the top drawer
     if (logId
-        && ['PR_REVIEW', 'PR_SUBMIT', 'PROJECT_WORK'].includes(logType)) {
+        && PROJECT_TYPE_LOGS.includes(logType)) {
           Meteor.setTimeout(() => {
             history.push(`/?pid=${ projectId }&id=${ logId }`);
             toggleEditLogDrawer();
@@ -119,7 +125,7 @@ class AddLogDrawer extends Component {
                   const projectId = getUrlParameter('pid');
                   if (logType === 'CANCEL') {
                     return toggleAddLogDrawer();
-                  } else if (!projectId && ['PR_REVIEW', 'PR_SUBMIT', 'PROJECT_WORK'].includes(logType)) {
+                  } else if (!projectId && PROJECT_TYPE_LOGS.includes(logType)) {
                     this.props.enqueueSnackbar('A PROJECT MUST BE SELECTED', {
                       variant: 'error',
                       preventDuplicate: true,

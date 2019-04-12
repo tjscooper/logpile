@@ -31,6 +31,10 @@ export default Log = Class.create({
       type: String,
       optional: true
     },
+    notes: {
+      type: String,
+      optional: true
+    },
     userId: String,
     type: {
       type: LogType

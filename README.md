@@ -5,10 +5,9 @@ Intro.. Description.. Screenshots
 ##### TO DEVELOP
 
 * Bugs
-  - Update Log form not populating
-  - Tasks not populating correctly (or on time)
+  - Update Log form not populating √ 
+  - Tasks not populating correctly (or on time) √
 * Features
-  - React Context
   - Top Drawer √
   - Edit Log √
     - Add Name, TaskId to Log model √ 
@@ -30,7 +29,6 @@ Intro.. Description.. Screenshots
   - Pins (from Pinterest - Break time suggestions)
   - Read (from Medium - Break time suggestions)
   - Activity (Reminder to get up and move)
-* State Management (mobX)
 * Dynamic Log Types (database driven)
 * Authentication
 * Routes

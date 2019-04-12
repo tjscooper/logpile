@@ -9,7 +9,6 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { withStyles } from '@material-ui/core/styles';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import getUrlParameter from '/imports/util/getUrlParameter';
 import { createBrowserHistory } from 'history';
 const history = createBrowserHistory();
 
@@ -72,13 +71,17 @@ class Header extends React.Component {
   classes = this.props.classes;
 
   async componentDidMount() {
+    await this.getProjects();
+  }
+
+  async getProjects() {
     const projects = await Meteor.callPromise('projects.findAll');
     const { allProjects } = this.state.query;
-    if (projects.data 
+    if (projects.data
       && !projects.data.find((project) => allProjects.id && allProjects.id === project.id)) {
-        projects.data.unshift(allProjects);
-        await this.setStateAsync({ projects: projects.data, project: allProjects });
+      projects.data.unshift(allProjects);
     }
+    await this.setStateAsync({ projects: projects.data, project: allProjects });
   }
 
   handleLogoClick = async () => {
@@ -160,6 +163,11 @@ class Header extends React.Component {
                         <span className={ this.classes.menuButtonTitle }>{ project.name }</span>
                     </Button>
                     { this.buildMenu(projects) }
+                    <Button
+                      onClick={ () => this.getProjects() }
+                      className={ this.classes.menuButton }>
+                        <FontAwesomeIcon icon="sync" />
+                    </Button>
                   </div>
                 : null
             }

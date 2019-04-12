@@ -86,6 +86,7 @@ class EditLogDrawer extends Component {
       projectId: '',
       taskId: 'None',
       link: '',
+      notes: '',
       timerStart: 0,
       timerEnd: 0,
       timerElapsed: 0
@@ -126,6 +127,7 @@ class EditLogDrawer extends Component {
         name: nextProps.log.name,
         taskId: nextProps.log.taskId,
         link: nextProps.log.link,
+        notes: nextProps.log.notes,
         timerStart: nextProps.log.timerStart,
         timerEnd: nextProps.log.timerEnd,
         timerElapsed: nextProps.log.timerElapsed,
@@ -152,6 +154,7 @@ class EditLogDrawer extends Component {
       name: this.state.name,
       taskId: this.state.taskId,
       link: this.state.link,
+      notes: this.state.notes,
       timerStart: this.state.timerStart,
       timerEnd: this.state.timerEnd,
       timerElapsed: this.state.timerElapsed
@@ -286,6 +289,19 @@ class EditLogDrawer extends Component {
               onChange={ event => this.handleTextInput({ event, field: 'link' }) }
               margin="normal"
               variant="outlined"
+            />
+            <TextField
+              id="outlined-notes"
+              label="Notes"
+              placeholder="notes"
+              className={ classes.textField }
+              value={ this.state.notes }
+              onChange={ event => this.handleTextInput({ event, field: 'notes' }) }
+              margin="normal"
+              variant="outlined"
+              multiline={ true }
+              rows={ 4 }
+              rowsMax= { 20 }
             />
           </FormGroup>
           <Button
