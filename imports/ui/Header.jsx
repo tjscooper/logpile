@@ -9,6 +9,9 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { withStyles } from '@material-ui/core/styles';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import getUrlParameter from '/imports/util/getUrlParameter';
+import { createBrowserHistory } from 'history';
+const history = createBrowserHistory();
 
 const styles = theme => ({
   root: {
@@ -72,7 +75,7 @@ class Header extends React.Component {
     const projects = await Meteor.callPromise('projects.findAll');
     const { allProjects } = this.state.query;
     if (projects.data 
-      && !projects.data.find((project) => project.id === allProjects.id)) {
+      && !projects.data.find((project) => allProjects.id && allProjects.id === project.id)) {
         projects.data.unshift(allProjects);
         await this.setStateAsync({ projects: projects.data, project: allProjects });
     }
@@ -92,6 +95,9 @@ class Header extends React.Component {
 
   handleMenuSelect = (project) => {
     this.setState({ project }, () => {
+      if (project.id === 'all') {
+        history.push('/');
+      }
       this.handleMenuClose();
     });
   }
@@ -105,18 +111,20 @@ class Header extends React.Component {
         open={ Boolean(menuEl) }
         onClose={ this.handleMenuClose }>
         {
-          projects.map((project) => (
-            <Link
-              key={ project.id }
-              to={ { pathname: '/', search: `?pid=${ project.id }` } }
-              className={ this.classes.menuItemLink }>
-              <MenuItem
-                value={ project.id }
-                onClick={ () => this.handleMenuSelect(project) }>
-                  { project.name }
-              </MenuItem>
-            </Link>
-          ))
+          projects.map((project) => {
+            return (
+              <Link
+                key={ project.id }
+                to={ { pathname: '/', search: `?pid=${ project.id }` } }
+                className={ this.classes.menuItemLink }>
+                <MenuItem
+                  value={ project.id }
+                  onClick={ () => this.handleMenuSelect(project) }>
+                    { project.name }
+                </MenuItem>
+              </Link>
+            );
+          })
         }
       </Menu>
     );

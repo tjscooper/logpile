@@ -23,8 +23,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { css } from 'glamor';
 import Log, { LogType, LogsCollection } from '/imports/model/log.js';
 import LogTypeService from '/imports/service/log-type-service';
-import { createBrowserHistory } from 'history';
 import { Paper } from 'material-ui';
+import { createBrowserHistory } from 'history';
+import isEqual from 'lodash.isequal';
 const history = createBrowserHistory();
 
 const styles = theme => ({
@@ -82,6 +83,7 @@ class EditLogDrawer extends Component {
       tasks: [],
       // Editable fields
       name: '',
+      projectId: '',
       taskId: 'None',
       link: '',
       timerStart: 0,
@@ -96,16 +98,21 @@ class EditLogDrawer extends Component {
     });
   }
 
-  async componentDidMount() {
+  async componentDidUpdate(prevProps, prevState) {
     const projectId = getUrlParameter('pid');
-    if (projectId) {
+    if (
+      (prevState.projectId && prevState.projectId !== projectId)
+      || (!prevState.tasks.length) 
+      || (!isEqual(this.state.tasks, prevState.tasks))
+    ) {
       const tasks = await Meteor.callPromise('tasks.findAll', projectId);
-      await this.setStateAsync({ tasks: tasks.data });
+      if (tasks && tasks.data && tasks.data.length) {
+        await this.setStateAsync({ tasks: tasks.data, projectId });
+      }
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    console.log(nextProps);
     if (!!nextProps.log) {
       this.setStateAsync({
         name: nextProps.log.name,
@@ -142,7 +149,6 @@ class EditLogDrawer extends Component {
       timerElapsed: this.state.timerElapsed
     });
     const updateId = await Meteor.callPromise('logs.update', log);
-    console.log(updateId);
     if (updateId) {
       this.handleClose();
     }
@@ -180,7 +186,7 @@ class EditLogDrawer extends Component {
     }
     return (
       <div className={ classes.editLogMenuRoot }>
-        <AppBar position="static" color="secondary">
+        <AppBar position="static" color="primary">
           <Toolbar>
             <IconButton
               className={ classes.editLogMenuOptionsButton }
@@ -243,31 +249,32 @@ class EditLogDrawer extends Component {
               margin="normal"
               variant="outlined"
             />
-            <FormControl variant="outlined" className={ classes.formControl }>
-              <InputLabel
-                ref={ ref => {
-                  this.InputLabelRef = ref;
-                } }
-                htmlFor="task-select-list">
-                Task
-              </InputLabel>
-              { this.state.tasks.length && <Select
-                value={ this.state.taskId || this.state.tasks[0].id }
-                onChange={ event => this.handleTaskChange({ event, field: 'taskId' }) }
-                input={
-                  <OutlinedInput
-                    labelWidth={ this.state.labelWidth }
-                    name="tasks"
-                    id="task-select-list"
-                  />
-                }>
-                  <MenuItem value="">
-                    <em>None</em>
-                  </MenuItem>
-                  { this.state.tasks.map((task) => <MenuItem key={ `${ task.id }-task` } value={ task.id }>{ task.name }</MenuItem>) }
-                </Select>
+            { this.state.tasks.length
+                ? <FormControl variant="outlined" className={ classes.formControl }>
+                    <InputLabel
+                      ref={ ref => {
+                        this.InputLabelRef = ref;
+                      } }
+                      htmlFor="task-select-list">
+                      Task
+                    </InputLabel>
+                    <Select
+                      value={ this.state.taskId || this.state.tasks[0].id }
+                      onChange={ event => this.handleTaskChange({ event, field: 'taskId' }) }
+                      input={
+                        <OutlinedInput
+                          labelWidth={ this.state.labelWidth }
+                          name="tasks"
+                          id="task-select-list"/>
+                      }>
+                      { this.state.tasks.map((task) => (
+                          <MenuItem key={ `${ task.id }-task` } value={ task.id }>{ task.name }</MenuItem>
+                        ))
+                      }
+                    </Select>
+                  </FormControl>
+                : null 
               }
-            </FormControl>
             <TextField
               id="outlined-link"
               label="Link"
@@ -301,7 +308,7 @@ class EditLogDrawer extends Component {
         <Drawer
           anchor="top"
           open={ open }
-          color="primary"
+          color="default"
           classes={ DRAWER_CSS }>
           <div
             tabIndex={ 0 }
@@ -322,11 +329,12 @@ EditLogDrawer.propTypes = {
 
 export default EditLogDrawerContainer = withTracker(() => {
   
-  const _id = getUrlParameter('id'); 
+  const _id = getUrlParameter('id');
   Meteor.subscribe('log', { _id });
-  
+  const log = LogsCollection.find({ _id }).fetch()[0];
+  const projectId = !log ? getUrlParameter('pid') : log.projectId;
   return {
-    log: LogsCollection.find({ _id }).fetch()[0],
-    projectId: getUrlParameter('pid')
+    log,
+    projectId
   };
 })(withStyles(styles)(EditLogDrawer));

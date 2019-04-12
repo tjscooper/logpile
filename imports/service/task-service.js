@@ -10,6 +10,9 @@ const integrations = {
 export default class TaskService {
 
   static getTasks(projectId, provider = 'asana') {
+    if (!projectId || projectId === 'all') {
+      return;
+    }
     return new Promise((resolve, reject) => {
       const { token } = integrations[provider];
       const client = asana.Client.create().useAccessToken(token);

@@ -9,7 +9,6 @@ export default class LogService {
   }
 
   static update(model) {
-    console.log('server update', model);
     if (!model instanceof Log) {
       throw new Meteor.Error('logs.update: invalid model');
     }

@@ -7,6 +7,7 @@ import Fab from '@material-ui/core/Fab';
 import AddLogDrawer from './AddLogDrawer';
 import EditLogDrawer from './EditLogDrawer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import getUrlParameter from '/imports/util/getUrlParameter';
 
 const styles = theme => ({
   appBar: {
@@ -52,9 +53,12 @@ class Footer extends Component {
           open={ openAddLogDrawer }
           toggleAddLogDrawer={ () => toggleAddLogDrawer() }
           toggleEditLogDrawer={ () => toggleEditLogDrawer() } />
-        <EditLogDrawer
-          open={ openEditLogDrawer }
-          toggleEditLogDrawer={ () => toggleEditLogDrawer() } />
+        { getUrlParameter('id')
+            ? <EditLogDrawer
+                open={ openEditLogDrawer }
+                toggleEditLogDrawer={ () => toggleEditLogDrawer() } />
+            : null
+        }
       </React.Fragment>
     );
   }

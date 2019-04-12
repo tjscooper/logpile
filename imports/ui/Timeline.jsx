@@ -12,6 +12,8 @@ import Button from '@material-ui/core/Button';
 import { LogType } from '/imports/model/log';
 import LogTypeService from '/imports/service/log-type-service';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { createBrowserHistory } from 'history';
+const history = createBrowserHistory();
 
 const ROOT_CSS = css({
   marginTop: 0,
@@ -29,8 +31,13 @@ const LINK_CSS = css({
 });
 class Timeline extends Component {
 
+  componentDidMount() {
+    // reset filters
+    history.push(`/`);
+  }
+
   render() {
-    const { logs, toggleEditLogDrawer } = this.props;
+    const { logs, projectId, toggleEditLogDrawer } = this.props;
     if (!logs) {
       return null;
     }
@@ -38,16 +45,19 @@ class Timeline extends Component {
       <div className={ TIMELINE_CSS }>
         <ScrollToBottom className={ ROOT_CSS }>
           <VerticalTimeline>
-            { logs.map(log => this.makeLogElement(log, toggleEditLogDrawer)) }
+            { logs.map(log => this.makeLogElement(log, projectId, toggleEditLogDrawer)) }
           </VerticalTimeline>
         </ScrollToBottom>
       </div>
     );
   }
 
-  makeLogElement(log, toggleEditLogDrawer) {
+  makeLogElement(log, projectId, toggleEditLogDrawer) {
     let logType = LogType.getIdentifier(log.type);
     const buttonInfo = LogTypeService.getInfo(logType);
+    const search = projectId === 'all' || getUrlParameter('pid') !== 'all'
+      ? `?pid=${projectId || log.projectId}&id=${log._id}`
+      : null;
     return (
       <VerticalTimelineElement
         key={ log._id }
@@ -61,7 +71,7 @@ class Timeline extends Component {
         icon={ buttonInfo.icon }>
           <Link
             key={ log._id }
-            to={ { pathname: '/', search: `?pid=${ log.projectId }&id=${ log._id }` }}
+            to={ { pathname: '/', search } }
             className={ LINK_CSS }
             onClick={ toggleEditLogDrawer }>
               <h3 className="vertical-timeline-element-title">{ log.name || buttonInfo.title }</h3>
@@ -71,7 +81,7 @@ class Timeline extends Component {
               <Link 
                 key={ `${ log.id }-project` }
                 to={ window.location }
-                onClick={ () => window.open(`https://app.asana.com/0/${ log.projectId }/list`, '_blank') }>
+                onClick={ () => window.open(`https://app.asana.com/0/${ projectId }/list`, '_blank') }>
                   <FontAwesomeIcon icon="project-diagram" />
               </Link>
             </Button>
@@ -101,5 +111,6 @@ export default TimelineContainer = withTracker(() => {
   Meteor.subscribe('logs');
   return {
     logs: LogsCollection.find(query, { sort: { createdAt: 1 } }).fetch(),
+    projectId
   };
 })(Timeline);

@@ -78,9 +78,6 @@ class AddLogDrawer extends Component {
   async addLog(logType, toggleAddLogDrawer, toggleEditLogDrawer) {
     const projectId = getUrlParameter('pid');
 
-    if (!projectId || projectId && projectId === 'all' || logType === 'CANCEL') {
-      return toggleAddLogDrawer();
-    }
     // close the bottom drawer
     toggleAddLogDrawer();
 
@@ -94,12 +91,10 @@ class AddLogDrawer extends Component {
 
     // open the top drawer
     if (logId
-        && projectId !== 'all'
-        && ['PR_REVIEW','PR_SUBMIT', 'PROJECT_WORK'].includes(logType)) {
+        && ['PR_REVIEW', 'PR_SUBMIT', 'PROJECT_WORK'].includes(logType)) {
           Meteor.setTimeout(() => {
-            console.log(this);
             history.push(`/?pid=${ projectId }&id=${ logId }`);
-            toggleEditLogDrawer();
+            return toggleEditLogDrawer();
           }, 1000);
     }
   }

@@ -4,13 +4,16 @@ Intro.. Description.. Screenshots
 
 ##### TO DEVELOP
 
+* Bugs
+  - Update Log form not populating
+  - Tasks not populating correctly (or on time)
 * Features
+  - React Context
   - Top Drawer √
-  - Edit Log
+  - Edit Log √
     - Add Name, TaskId to Log model √ 
     - Select Task (from Asana) √
     - Add Link √
-    - Start Timer (rough-in)
     - Save Button √
   - Delete Log √
   - Log Timer
@@ -27,6 +30,7 @@ Intro.. Description.. Screenshots
   - Pins (from Pinterest - Break time suggestions)
   - Read (from Medium - Break time suggestions)
   - Activity (Reminder to get up and move)
+* State Management (mobX)
 * Dynamic Log Types (database driven)
 * Authentication
 * Routes
@@ -41,6 +45,7 @@ Intro.. Description.. Screenshots
 * Fit and Finish
   - Grid icons for Add Log (fill out the space) √
   - Repeating wallpaper (css trick, perhaps)
+  - Better looking Timeline cards (https://material-ui.com/demos/cards/) Media Control Card
 
 ##### TO DO
 
@@ -52,6 +57,7 @@ Intro.. Description.. Screenshots
   - And (some benefits 15s)
   - Where (github 15s)
 * Presentation Notes (timed 5m)
+* Cut new branch and continue working on Logpile
 * GoDaddy domain (logpile.ca)
 * Deploy (docker)
 * README (local setup)
