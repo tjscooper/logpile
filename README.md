@@ -2,6 +2,12 @@
 
 Intro.. Description.. Screenshots
 
+##### COLOUR SCHEME
+
+- Red: #f50057
+- Blue: #3f51b5
+- Lightgrey: #d3d3d3
+
 ##### TO DEVELOP
 
 * Bugs
@@ -44,6 +50,7 @@ Intro.. Description.. Screenshots
   - Grid icons for Add Log (fill out the space) √
   - Repeating wallpaper (css trick, perhaps)
   - Better looking Timeline cards (https://material-ui.com/demos/cards/) Media Control Card
+  - Favicon using FontAwesome font: https://paulferrett.com/fontawesome-favicon/
 
 ##### TO DO
 
