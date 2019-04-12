@@ -7,11 +7,10 @@ import GridListTile from '@material-ui/core/GridListTile';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
-
 import getUrlParameter from '/imports/util/getUrlParameter';
-
 import Log, { LogType } from '/imports/model/log.js';
 import LogTypeService from '/imports/service/log-type-service.js';
+import { withSnackbar } from 'notistack';
 
 import { createBrowserHistory } from 'history';
 const history = createBrowserHistory();
@@ -47,6 +46,7 @@ const styles = theme => ({
 });
 
 class GridTileLogType extends Component {
+  
   constructor(props) {
     super(props)
   }
@@ -85,7 +85,9 @@ class AddLogDrawer extends Component {
       projectId,
       userId: 'efg',
       type: LogType[logType],
-      link: ''
+      link: '',
+      name: '',
+      taskId: ''
     });
     const logId = await Meteor.callPromise('logs.insert', log);
 
@@ -94,18 +96,18 @@ class AddLogDrawer extends Component {
         && ['PR_REVIEW', 'PR_SUBMIT', 'PROJECT_WORK'].includes(logType)) {
           Meteor.setTimeout(() => {
             history.push(`/?pid=${ projectId }&id=${ logId }`);
-            return toggleEditLogDrawer();
-          }, 1000);
+            toggleEditLogDrawer();
+          }, 1500);
     }
   }
 
   render() {
     const { classes, open, toggleAddLogDrawer, toggleEditLogDrawer } = this.props;
     const logTypes = LogType.getIdentifiers();
+
     if (!logTypes.includes('CANCEL')) {
       logTypes.push('CANCEL');
     }
-
     const buttonList = (
       <div className={ classes.root }>
         <GridList className={ classes.gridList } cols={ 10 }>
@@ -113,7 +115,24 @@ class AddLogDrawer extends Component {
             <GridListTile key={ index } className={ classes.gridListItem }>
               <GridTileLogType
                 logType={logType}
-                onClick={ () => this.addLog(logType, toggleAddLogDrawer, toggleEditLogDrawer) } />
+                onClick={ () => {
+                  const projectId = getUrlParameter('pid');
+                  if (logType === 'CANCEL') {
+                    return toggleAddLogDrawer();
+                  } else if (!projectId && ['PR_REVIEW', 'PR_SUBMIT', 'PROJECT_WORK'].includes(logType)) {
+                    this.props.enqueueSnackbar('A PROJECT MUST BE SELECTED', {
+                      variant: 'error',
+                      preventDuplicate: true,
+                      anchorOrigin: {
+                        vertical: 'top',
+                        horizontal: 'center',
+                      },
+                    });
+                    return toggleAddLogDrawer();
+                  } else {
+                    return this.addLog(logType, toggleAddLogDrawer, toggleEditLogDrawer);
+                  }
+                } } />
             </GridListTile>
           )) }
         </GridList>
@@ -144,4 +163,4 @@ AddLogDrawer.propTypes = {
   open: PropTypes.bool.isRequired
 };
 
-export default withStyles(styles)(AddLogDrawer);
+export default withStyles(styles)(withSnackbar(AddLogDrawer));

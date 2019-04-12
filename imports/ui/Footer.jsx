@@ -8,6 +8,7 @@ import AddLogDrawer from './AddLogDrawer';
 import EditLogDrawer from './EditLogDrawer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import getUrlParameter from '/imports/util/getUrlParameter';
+import { SnackbarProvider } from 'notistack';
 
 const styles = theme => ({
   appBar: {
@@ -28,9 +29,28 @@ const styles = theme => ({
     height: 72,
     width: 72
   },
+  success: { backgroundColor: 'purple' },
+  error: { 
+    backgroundColor: '#f50057', fontSize: 16, padding: 20, paddingLeft: 75, textAlign: 'center', weight: 'bold'
+  },
+  warning: { backgroundColor: 'green' },
+  info: { backgroundColor: 'yellow' },
 });
 
 class Footer extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      editLogDrawerOpen: getUrlParameter('id') !== null
+    };
+  }
+
+  componentDidMount() {
+    if (getUrlParameter('id') === null) {
+      this.setState({ editLogDrawerOpen: false });
+    }
+  }
 
   render() {
     const { 
@@ -49,11 +69,21 @@ class Footer extends Component {
             </Fab>
           </Toolbar>
         </AppBar>
-        <AddLogDrawer
-          open={ openAddLogDrawer }
-          toggleAddLogDrawer={ () => toggleAddLogDrawer() }
-          toggleEditLogDrawer={ () => toggleEditLogDrawer() } />
-        { getUrlParameter('id')
+        <SnackbarProvider
+          maxSnack={3}
+          hideIconVariant
+          classes={ {
+            variantSuccess: classes.success,
+            variantError: classes.error,
+            variantWarning: classes.warning,
+            variantInfo: classes.info,
+          } }>
+          <AddLogDrawer
+            open={ openAddLogDrawer }
+            toggleAddLogDrawer={ () => toggleAddLogDrawer() }
+            toggleEditLogDrawer={ () => toggleEditLogDrawer() } />
+        </SnackbarProvider>
+        { this.state.editLogDrawerOpen
             ? <EditLogDrawer
                 open={ openEditLogDrawer }
                 toggleEditLogDrawer={ () => toggleEditLogDrawer() } />

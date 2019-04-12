@@ -98,6 +98,14 @@ class EditLogDrawer extends Component {
     });
   }
 
+  async componentDidMount() {
+    const projectId = getUrlParameter('pid');
+    const tasks = await Meteor.callPromise('tasks.findAll', projectId);
+    if (tasks && tasks.data && tasks.data.length) {
+      await this.setStateAsync({ tasks: tasks.data, projectId });
+    }
+  }
+
   async componentDidUpdate(prevProps, prevState) {
     const projectId = getUrlParameter('pid');
     if (
@@ -233,12 +241,6 @@ class EditLogDrawer extends Component {
         </AppBar>
         <Paper className={ FORM_CSS }>
           <FormGroup>
-            {/* <FormControlLabel
-              control={
-                <Switch checked={ auth } onChange={ this.handleChange } aria-label="LoginSwitch" />
-              }
-              label={ auth ? 'Logout' : 'Login' }
-            /> */}
             <TextField
               id="outlined-name"
               label="Name"
@@ -250,7 +252,7 @@ class EditLogDrawer extends Component {
               variant="outlined"
             />
             { this.state.tasks.length
-                ? <FormControl variant="outlined" className={ classes.formControl }>
+                ? <FormControl variant="outlined" className={ classes.formControl } style={{ marginTop: 10 }}>
                     <InputLabel
                       ref={ ref => {
                         this.InputLabelRef = ref;
