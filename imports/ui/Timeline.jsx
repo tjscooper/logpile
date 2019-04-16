@@ -119,7 +119,7 @@ export default TimelineContainer = withTracker(() => {
 
   Meteor.subscribe('logs');
   return {
-    logs: LogsCollection.find(query, { sort: { createdAt: 1 } }).fetch(),
+    logs: LogsCollection.find(query, { sort: { timerStart: 1 } }).fetch(),
     projectId
   };
 })(Timeline);
