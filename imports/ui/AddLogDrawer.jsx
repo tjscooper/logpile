@@ -1,14 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { withTracker } from 'meteor/react-meteor-data';
 import { withStyles } from '@material-ui/core/styles';
 import Drawer from '@material-ui/core/Drawer';
-import GridList from '@material-ui/core/GridList';
-import GridListTile from '@material-ui/core/GridListTile';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import getUrlParameter from '/imports/util/getUrlParameter';
-import Log, { LogType } from '/imports/model/log.js';
+import Log, { LogType, LogsCollection } from '/imports/model/log.js';
 import LogTypeService from '/imports/service/log-type-service.js';
 import { withSnackbar } from 'notistack';
 
@@ -75,7 +74,8 @@ class AddLogDrawer extends Component {
     super(props);
   }
   
-  async addLog(logType, toggleAddLogDrawer, toggleEditLogDrawer) {
+  async addLog(logType) {
+    const { toggleAddLogDrawer, toggleEditLogDrawer, lastLog } = this.props;
     let projectId = getUrlParameter('pid');
 
     // close the bottom drawer
@@ -94,7 +94,11 @@ class AddLogDrawer extends Component {
       taskId: '',
       notes: ''
     });
+
     const logId = await Meteor.callPromise('logs.insert', log);
+    if (lastLog) {
+      await Meteor.callPromise('logs.update.last', lastLog);
+    }
 
     // open the top drawer
     if (logId
@@ -153,7 +157,7 @@ class AddLogDrawer extends Component {
                 <div className="grid-row">
                   { logTypes.map((logType, index) => {
                     return (
-                        <div className="grid-item">
+                        <div key={ index } className="grid-item">
                           { this.renderGridItem(logType) }
                         </div>
                       );
@@ -174,4 +178,11 @@ AddLogDrawer.propTypes = {
   open: PropTypes.bool.isRequired
 };
 
-export default withStyles(styles)(withSnackbar(AddLogDrawer));
+export default AddLogDrawerContainer = withTracker(() => {
+
+  Meteor.subscribe('log.last');
+  const lastLog = LogsCollection.find({}, { sort: { timerStart: -1 } }, { limit: 1 }).fetch()[0];
+  return {
+    lastLog
+  };
+})(withStyles(styles)(withSnackbar(AddLogDrawer)));
