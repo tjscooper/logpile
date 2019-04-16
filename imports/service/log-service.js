@@ -18,6 +18,21 @@ export default class LogService {
     );
   }
 
+  static updateLastLog(model) {
+    if (!model instanceof Log) {
+      throw new Meteor.Error('logs.update.last: invalid model');
+    }
+    const endTime = Date.now();
+    const elapsedTime = endTime - model.timerStart;
+    return LogsCollection.update(
+      { _id: model._id },
+      { $set: {
+        timerEnd: endTime,
+        timerElapsed: elapsedTime
+      } }
+    );
+  }
+
   static remove(model) {
     if (!model instanceof Log) {
       throw new Meteor.Error('log.remove: invalid model');
