@@ -34,6 +34,15 @@ class Timeline extends Component {
   componentDidMount() {
     // reset filters
     history.push(`/`);
+    if (this.props.logs.length) {
+      this.props.setLogs(this.props.logs);
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.logs.length > this.props.logs.length) {
+      this.props.setLogs(nextProps.logs);
+    }
   }
 
   render() {

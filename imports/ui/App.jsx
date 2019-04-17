@@ -10,14 +10,15 @@ import { css } from 'glamor';
 import { 
   faTableTennis, faVoteYea, faCode, faProjectDiagram, faComments,
   faBell, faHeadset, faCoffee, faBong, faWindowClose, faBullseye,
-  faEllipsisV, faLink, faLongArrowAltLeft, faSync, faTasks, faBullhorn
+  faEllipsisV, faLink, faLongArrowAltLeft, faSync, faTasks, faBullhorn, faStopwatch
 } from '@fortawesome/free-solid-svg-icons'
 
 
 library.add([
   faTableTennis, faVoteYea, faCode, faProjectDiagram, faComments,
   faBell, faHeadset, faCoffee, faBong, faWindowClose, faBullseye,
-  faEllipsisV, faLink, faLongArrowAltLeft, faSync, faTasks, faBullhorn
+  faEllipsisV, faLink, faLongArrowAltLeft, faSync,
+  faTasks, faBullhorn, faStopwatch
 ]);
 
 const muiTheme = getMuiTheme();
@@ -31,6 +32,8 @@ export default class App extends Component {
     super(props);
 
     this.state = {
+      logs: [],
+      projectId: null,
       openAddLogDrawer: false,
       openEditLogDrawer: false
     };
@@ -44,8 +47,12 @@ export default class App extends Component {
     this.setState(prevState => ({ openEditLogDrawer: !prevState.openEditLogDrawer }));
   }
 
+  setLogs = (logs) => {
+    this.setState({ logs });
+  }
+
   render() {
-    const { openAddLogDrawer, openEditLogDrawer } = this.state;
+    const { openAddLogDrawer, openEditLogDrawer, logs } = this.state;
     return (
       <Router>
         <MuiThemeProvider muiTheme={ muiTheme }>
@@ -59,10 +66,12 @@ export default class App extends Component {
                 render={ (props) => (
                   <Timeline
                     { ...props }
-                    toggleEditLogDrawer={ this.toggleEditLogDrawer } />
+                    toggleEditLogDrawer={ this.toggleEditLogDrawer }
+                    setLogs={ this.setLogs } />
                 )}/>
             </Switch>
             <Footer
+              logs={ logs }
               openAddLogDrawer={ openAddLogDrawer }
               openEditLogDrawer={ openEditLogDrawer }
               toggleAddLogDrawer={ this.toggleAddLogDrawer }

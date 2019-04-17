@@ -62,19 +62,31 @@ body {
   .grid-item {
     flex-basis: 20%;
   }
+  .stopwatch {
+    font-size: 24px;
+  }
 }
 @media(max-width: 1073px) {
-   .grid-item {
+  .grid-item {
     flex-basis: 20%;
+  }
+  .stopwatch {
+    font-size: 24px;
   }
 }
 @media(max-width: 815px) {
   .grid-item {
     flex-basis: 25%;
   }
+  .stopwatch {
+    font-size: 18px;
+  }
 }
 @media(max-width: 555px) {
   .grid-item {
     flex-basis: 10%;
+  }
+  .stopwatch {
+    font-size: 10px;
   }
 }

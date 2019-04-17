@@ -1,3 +1,7 @@
+import moment from 'moment';
+import momentDurationFormatSetup from 'moment-duration-format';
+momentDurationFormatSetup(moment);
+
 import Log, { LogsCollection } from '../model/log.js';
 export default class LogService {
 
@@ -22,13 +26,20 @@ export default class LogService {
     if (!model instanceof Log) {
       throw new Meteor.Error('logs.update.last: invalid model');
     }
-    const endTime = Date.now();
-    const elapsedTime = endTime - model.timerStart;
+    const timerEnd = new Date();
+    const elapsedTime = Math.abs(moment(model.timerStart).diff(moment(timerEnd)));
+    let timerElapsed = elapsedTime > 59999
+      ? moment.duration(elapsedTime).format("HH:mm:ss")
+      : '00:01:00';
+    if (timerElapsed.length < 6) {
+      timerElapsed = `00:${ timerElapsed }`;
+    }
+
     return LogsCollection.update(
       { _id: model._id },
       { $set: {
-        timerEnd: endTime,
-        timerElapsed: elapsedTime
+        timerEnd,
+        timerElapsed
       } }
     );
   }
