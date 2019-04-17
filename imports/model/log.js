@@ -10,7 +10,7 @@ export const LogType = Enum.create({
     PR_SUBMIT: 2,
     PROJECT_WORK: 3,
     MEETING: 4,
-    REMINDER: 5,
+    CALLOUT: 5,
     CALL: 6,
     BREAK: 7,
     PING_PONG: 8,
@@ -41,16 +41,16 @@ export default Log = Class.create({
     },
     link: String,
     timerStart: {
-      type: Number,
-      default: () => Date.now(),
+      type: Date,
+      default: () => new Date(),
       optional: true
     },
     timerEnd: {
-      type: Number,
+      type: Date,
       optional: true
     },
     timerElapsed: {
-      type: Number,
+      type: Date,
       optional: true
     }
   },

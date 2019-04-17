@@ -28,9 +28,9 @@ export default class LogTypeService {
         title = 'Meeting';
         break;
       // 5
-      case 'REMINDER':
-        icon = <FontAwesomeIcon icon='bell' />;
-        title = 'Reminder';
+      case 'CALLOUT':
+        icon = <FontAwesomeIcon icon='bullhorn' />;
+        title = 'Call Out';
         break;
       // 6
       case 'CALL':

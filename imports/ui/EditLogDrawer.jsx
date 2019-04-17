@@ -71,6 +71,8 @@ const FORM_CSS = css({
   padding: 24
 });
 
+const PROJECT_TYPE_LOGS = ['PR_REVIEW', 'PR_SUBMIT', 'PROJECT_WORK', 'MEETING', 'CALLOUT'];
+
 class EditLogDrawer extends Component {
 
   constructor(props) {
@@ -178,7 +180,7 @@ class EditLogDrawer extends Component {
   handleClose = () => {
     const { toggleEditLogDrawer } = this.props;
     this.setState({ anchorEl: null }, () => {
-      history.push(`/?pid=${ this.props.projectId }`);
+      history.push(`/`);
       toggleEditLogDrawer();
     });
   };
@@ -197,6 +199,7 @@ class EditLogDrawer extends Component {
     const { auth, anchorEl } = this.state;
     const logType = LogType.getIdentifier(log.type);
     const logTypeInfo = LogTypeService.getInfo(logType);
+    const hasTasks = PROJECT_TYPE_LOGS.includes(logType);
     const open = Boolean(anchorEl);
     if (!log) {
       return null;
@@ -286,7 +289,7 @@ class EditLogDrawer extends Component {
                   </FormControl>
                 : null 
               }
-            { this.state.taskId && <Button color="default">
+            { hasTasks && this.state.taskId && <Button color="default">
                 <Link
                   to={ window.location }
                   onClick={ () => window.open(`https://app.asana.com/0/${ this.state.projectId }/${ this.state.taskId }/f`, '_blank') }>

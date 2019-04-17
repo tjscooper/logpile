@@ -44,7 +44,7 @@ const styles = theme => ({
   },
 });
 
-const PROJECT_TYPE_LOGS = ['PR_REVIEW', 'PR_SUBMIT', 'PROJECT_WORK', 'MEETING'];
+const PROJECT_TYPE_LOGS = ['PR_REVIEW', 'PR_SUBMIT', 'PROJECT_WORK', 'MEETING', 'CALLOUT'];
 class GridTileLogType extends Component {
   
   constructor(props) {
