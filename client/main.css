@@ -1,6 +1,6 @@
 body {
   font-family: sans-serif;
-  background-color: lightgray !important;
+  background-color: #666669 !important;
 }
 
 ::-webkit-scrollbar { 
@@ -33,6 +33,29 @@ body {
   box-sizing: border-box;
   text-transform: uppercase;
   font-weight: 200;
+}
+
+.vertical-timeline-element .vertical-timeline-element-content .vertical-timeline-element-date {
+  color: #fefefe;
+}
+
+.vertical-timeline-element .vertical-timeline-element-content #project {
+  padding-top: 2px;
+}
+
+.vertical-timeline-element .vertical-timeline-element-content #task {
+  padding-top: 2px;
+}
+
+.vertical-timeline-element .vertical-timeline-element-content #link {
+  padding-top: 2px;
+}
+
+.vertical-timeline-element .vertical-timeline-element-content h4#elapsed {
+  color: grey;
+  font-size: 14px;
+  font-weight: 200;
+  margin-top: 6px;
 }
 
 @media(max-width: 1333px) {

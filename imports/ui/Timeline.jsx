@@ -22,7 +22,7 @@ const ROOT_CSS = css({
 });
 
 const TIMELINE_CSS = css({
-  background: '#dedede'
+  background: '#747478'
 });
 
 const LINK_CSS = css({
@@ -68,7 +68,7 @@ class Timeline extends Component {
           color: '#fff',
           fontSize: 21
         }}
-        icon={ buttonInfo.icon }>
+        icon={ buttonInfo.icon }>          
           <Link
             key={ log._id }
             to={ { pathname: '/', search } }
@@ -77,26 +77,32 @@ class Timeline extends Component {
               <h3 className="vertical-timeline-element-title">{ log.name || buttonInfo.title }</h3>
               <h4 className="vertical-timeline-element-subtitle"></h4>
           </Link>
+        {
+          log.timerElapsed && <h4 id="elapsed">{ moment(log.timerEnd).to(moment(log.timerStart), true) }</h4>
+        }
           { log.projectId && <Button color="default">
               <Link 
+                id="project"
                 key={ `${ log.id }-project` }
                 to={ window.location }
-                onClick={ () => window.open(`https://app.asana.com/0/${ projectId }/list`, '_blank') }>
+                onClick={ () => window.open(`https://app.asana.com/0/${ log.projectId }/list`, '_blank') }>
                   <FontAwesomeIcon icon="project-diagram" />
               </Link>
             </Button>
           }
           { log.taskId && <Button color="default">
               <Link
+                id="task"
                 key={ `${log.id}-task` }
                 to={ window.location }
-                onClick={ () => window.open(`https://app.asana.com/0/${ projectId }/${ log.taskId }/f`, '_blank') }>
+                onClick={ () => window.open(`https://app.asana.com/0/${ log.projectId }/${ log.taskId }/f`, '_blank') }>
                 <FontAwesomeIcon icon="tasks" />
               </Link>
             </Button>
           }
           { log.link && <Button color="default">
               <Link
+                id="link"
                 key={ `${ log.id }-link` }
                 to=''
                 onClick={ () => window.open(log.link, '_blank') }>
