@@ -58,6 +58,14 @@ body {
   margin-top: 6px;
 }
 
+@media(max-width: 1920px) {
+  .grid-item {
+    flex-basis: 20%;
+  }
+  .stopwatch {
+    font-size: 24px;
+  }
+}
 @media(max-width: 1333px) {
   .grid-item {
     flex-basis: 20%;

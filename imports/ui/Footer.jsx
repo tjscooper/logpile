@@ -47,7 +47,8 @@ class Footer extends Component {
     this.state = {
       editLogDrawerOpen: getUrlParameter('id') !== null,
       logs: [],
-      elapsedTimers: []
+      elapsedTimers: [],
+      totalElapsedTimeText: null
     };
   }
 
@@ -65,7 +66,8 @@ class Footer extends Component {
         }
         return result;
       }, []);
-      this.setState({ logs: nextProps.logs, elapsedTimers });
+      const totalElapsedTimeText = this.getTotalElapsedTime(elapsedTimers);
+      this.setState({ logs: nextProps.logs, elapsedTimers, totalElapsedTimeText: totalElapsedTimeText });
     }
   }
 
@@ -80,8 +82,8 @@ class Footer extends Component {
     const { 
       classes, openAddLogDrawer, openEditLogDrawer, toggleAddLogDrawer, toggleEditLogDrawer
     } = this.props;
-    const totalElapsedTimeText = this.state.elapsedTimers.length
-      ? this.getTotalElapsedTime(this.state.elapsedTimers)
+    const totalElapsedTimeText = this.state.totalElapsedTimeText !== ''
+      ? this.state.totalElapsedTimeText
       : 'No time logged today';
     return (
       <React.Fragment>
